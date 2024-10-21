@@ -7,8 +7,7 @@
 </head>
 <body>
   <div id="app" v-cloak>
-    <input type="text" v-model="reportTitle">
-
+    <input type = "text" v-model="reportTitle">
     <h1>Harvest Report</h1>
     <p>This page is a <em> mockup</em> of a simplified harvest report.</p>
 
@@ -20,18 +19,18 @@
         <li><strong>Farm:</strong> Sample Farm</li>
         <li><strong>User:</strong> manager1</li>
         <li><strong>Language:</strong> English</li>
-        <li><strong>Start:</strong>{{ startDate }}</li>
-        <li><strong>End:</strong> {{ endDate }}</li>
-        <li><strong>Crop:</strong>{{ selectedCrop }}</li>
+        <li><strong>Start:</strong> 05/01/2018</li>
+        <li><strong>End:</strong> 05/15/2018</li>
+        <li><strong>Crop:</strong> Kale</li>
     </ul>
 
 
     <label for="reportTitle">Title:</label>
-    <input type="text" id="reportTitle" v-model="reportTitle" placeholder="Enter the title of the harvest report">
+    <input type="text" id="reportTitle" placeholder="Enter the title of the harvest report">
 
     <br><br>
     <label for="cropSelect">Crop:</label>
-    <select id="cropSelect" v-model="selectedCrop">
+    <select id="cropSelect">
         <option value="broccoli">Broccoli</option>
         <option value="kale" selected>Kale</option>
         <option value="peas">Peas</option>
@@ -48,14 +47,14 @@
     
     <br><br>
     <label for="startDate">Start Date:</label>
-    <input type="date" id="startDate" name="startDate" v-model="startDate"
+    <input type="date" id="startDate" name="startDate" value="2020-05-05"
            min="2014-01-01" max="2022-01-01">
 
     <br><br>
 
     <label for="endDate">End Date:</label>
-    <input type="date" id="endDate" name="endDate" v-model="endDate"
-           min="2014-01-01" max="2022-01-01">
+    <input type="date" id="endDate" name="endDate" value="2020-05-15"
+           min="2020-05-05" max="2022-01-01">
 
     <br><br>
 
@@ -82,22 +81,8 @@
             <td>Kale</td>
             <td>7</td>
             <td>Bunches</td>
-       </tr>
+        </tr>
     </table>
-  </div>
-
-  <script>
-  var app = new Vue({
-     el: "#app",
-     data: {
-	    reportTitle: "My Sample Harvest Report",
-	    startDate: "2020-05-05",
-	    endDate: "2020-05-15",
-	    selectedCrop: "kale",
-       }
-     });
-
-  </script>
 
 
 </body>
