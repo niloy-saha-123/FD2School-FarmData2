@@ -43,7 +43,7 @@
     <input type="date" id="endDate" name="endDate" v-model="endDate"
            min="2014-01-01" max="2022-01-01">
     <br><br>
-    <button type="submit" @click="logs.push({date:'2018-05-01', area:'Chuau-1', crop:'Kale', yield:10, units:'Bunches'})">Generate Report</button>
+    <button type="submit" @click="generateReport">Generate Report</button>
     <table border="1">
         <tr>
             <th>Date</th>
@@ -73,6 +73,17 @@
         crops: ["broccoli", "kale", "peas"],
         areas: ["all", "chuau-1", "sq7"],
         logs: []
+     },
+     methods: {
+        generateReport: function(){
+            this.logs.push({
+                date: "2018-05-01",
+                area: "chauau-1",
+                crop: "kale",
+                yield: 10,
+                units: "Bunches"
+            })
+        }
      }
   });
   window.app = app;
