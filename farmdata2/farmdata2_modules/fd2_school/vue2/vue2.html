@@ -44,7 +44,12 @@
            min="2014-01-01" max="2022-01-01">
     <br><br>
     <button type="submit" @click="generateReport">Generate Report</button>
-    <table border="1">
+
+    <!-- Table with conditional rendering -->
+    <div v-if="logs.length === 0">
+        No matching records found.
+    </div>
+    <table v-else border="1">
         <tr>
             <th>Row</th>
             <th>Date</th>
