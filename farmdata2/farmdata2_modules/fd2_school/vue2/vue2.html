@@ -9,7 +9,7 @@
   <div id="app" v-cloak>
     <input type="text" v-model="reportTitle">
     <h1>Harvest Report</h1>
-    <p>This page is a <em> mockup</em> of a simplified harvest report.</p>
+    <p>This page is a <em>mockup</em> of a simplified harvest report.</p>
     <hr>
     <h1>{{ reportTitle.trim() === '' ? 'Mock Harvest Report' : reportTitle }}</h1>
     <p>Details:</p>
@@ -43,7 +43,7 @@
     <input type="date" id="endDate" name="endDate" v-model="endDate"
            min="2014-01-01" max="2022-01-01">
     <br><br>
-    <button type="submit">Generate Report</button>
+    <button type="submit" @click="logs.push({date:'2018-05-01', area:'Chuau-1', crop:'Kale', yield:10, units:'Bunches'})">Generate Report</button>
     <table border="1">
         <tr>
             <th>Date</th>
@@ -72,12 +72,8 @@
         selectedArea: "all",
         crops: ["broccoli", "kale", "peas"],
         areas: ["all", "chuau-1", "sq7"],
-        logs: [
-            {date: "05/02/2018", area: "Chuau-1", crop: "Kale", yield: 10, units: "Bunches"},
-            {date: "05/05/2018", area: "SQ7", crop: "Kale", yield: 7, units: "Bunches"}
-        ]
+        logs: []
      }
-
   });
   window.app = app;
   Vue.config.devtools = true;
