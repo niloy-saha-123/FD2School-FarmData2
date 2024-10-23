@@ -14,7 +14,7 @@
     <h1>{{ reportTitle.trim() === '' ? 'Mock Harvest Report' : reportTitle }}</h1>
     <p>Details:</p>
     <ul>
-        <li><strong>Farm:</strong> {{ farmName}}</li>
+        <li><strong>Farm:</strong> {{ farmName }}</li>
         <li><strong>User:</strong> {{ userName }}</li>
         <li><strong>Language:</strong> {{ userLanguage }}</li>
         <li><strong>Start:</strong>{{ startDate }}</li>
@@ -74,7 +74,11 @@
         </tr>
     </table>
   </div>
+
   <script>
+  // Enable Vue DevTools before creating Vue instance
+  Vue.config.devtools = true;
+
   var app = new Vue({
      el: "#app",
      data: {
@@ -92,6 +96,19 @@
      },
      methods: {
         generateReport: function() {
+            // Make API request
+            axios.get('http://fd2_farmdata2/farm.json')
+                .then((response) => {
+                    this.farmName = response.data.name;
+                    this.userName = response.data.user.name;
+                    this.userLanguage = response.data.languages.en.name;
+                })
+                .catch((error) => {
+                    console.log("Error Occurred");
+                    console.log(error);
+                });
+
+            // Add sample data
             this.logs.push({
                 date: "2018-05-01", 
                 area: "Chuau-1", 
@@ -114,8 +131,8 @@
         }
      }
   });
+
   window.app = app;
-  Vue.config.devtools = true;
   </script>
 </body>
 </html>
