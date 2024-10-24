@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest Report</title>
+    <script src="https://unpkg.com/vue@2"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <div id="app" v-cloak>
@@ -23,33 +25,31 @@
     </ul>
     <label for="reportTitle">Title:</label>
     <input type="text" id="reportTitle" v-model="reportTitle" placeholder="Enter the title of the harvest report">
-    <br><br>
+    <br /><br />
     <label for="cropSelect">Crop:</label>
     <select id="cropSelect" v-model="selectedCrop">
-        <option v-for="crop in crops" :value="crop">{{ crop }}</option>
+        <option v-for="crop in cropNames" :value="crop">{{ crop }}</option>
     </select>
-    <br><br>
+    <br /><br />
     <label for="fieldSelect">Area:</label>
     <select id="fieldSelect" v-model="selectedArea">
         <option v-for="area in areas" :value="area">{{ area }}</option>
     </select>
     
-    <br><br>
+    <br /><br />
     <label for="startDate">Start Date:</label>
     <input type="date" id="startDate" name="startDate" 
            v-model="startDate"
            :max="endDate"
-           :min="'2014-01-01'" 
-           :max="'2022-01-01'">
-    <br><br>
+           :min="'2014-01-01'">
+    <br /><br />
     <label for="endDate">End Date:</label>
     <input type="date" id="endDate" name="endDate" 
            v-model="endDate"
            :min="startDate"
-           :min="'2014-01-01'" 
            :max="'2022-01-01'">
-    <br><br>
-    <button type="submit" @click="generateReport">Generate Report</button>
+    <br /><br />
+    <button type="submit" @click="generateReport" :disabled="reportTitle.trim() === ''">Generate Report</button>
 
     <!-- Table with conditional rendering -->
     <div v-if="logs.length === 0">
@@ -74,9 +74,7 @@
         </tr>
     </table>
   </div>
-
   <script>
-  // Enable Vue DevTools before creating Vue instance
   Vue.config.devtools = true;
 
   var app = new Vue({
@@ -88,15 +86,32 @@
         userLanguage: "",
         startDate: "2020-05-05",
         endDate: "2020-05-15",
-        selectedCrop: "kale",
+        selectedCrop: "",
         selectedArea: "all",
-        crops: ["broccoli", "kale", "peas"],
         areas: ["all", "chuau-1", "sq7"],
-        logs: []
+        logs: [],
+        idToCropMap: new Map()
+     },
+     computed: {
+        cropNames() {
+            return Array.from(this.idToCropMap.values());
+        }
+     },
+     created() {
+        getIDToCropMap()
+            .then((theMap) => {
+                this.idToCropMap = theMap;
+                // Set selectedCrop to first crop in list once loaded
+                if (this.cropNames.length > 0) {
+                    this.selectedCrop = this.cropNames[0];
+                }
+            })
+            .catch((error) => {
+                console.log("Error getting crop map", error);
+            });
      },
      methods: {
         generateReport: function() {
-            // Make API request
             axios.get('http://fd2_farmdata2/farm.json')
                 .then((response) => {
                     this.farmName = response.data.name;
@@ -108,7 +123,6 @@
                     console.log(error);
                 });
 
-            // Add sample data
             this.logs.push({
                 date: "2018-05-01", 
                 area: "Chuau-1", 
