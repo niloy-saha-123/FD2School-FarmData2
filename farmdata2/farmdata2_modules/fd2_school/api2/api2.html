@@ -6,6 +6,7 @@
     <title>Harvest Report</title>
     <script src="https://unpkg.com/vue@2"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
 </head>
 <body>
   <div id="app" v-cloak>
@@ -90,7 +91,8 @@
         selectedArea: "all",
         areas: ["all", "chuau-1", "sq7"],
         logs: [],
-        idToCropMap: new Map()
+        idToCropMap: new Map(),
+        harvestLogs: []  // New array for getAllPages results
      },
      computed: {
         cropNames() {
@@ -123,13 +125,25 @@
                     console.log(error);
                 });
 
-            this.logs.push({
-                date: "2018-05-01", 
-                area: "Chuau-1", 
-                crop: "Kale", 
-                yield: 10, 
-                units: "Bunches"
-            });
+            // Convert dates to timestamps
+            let startTimestamp = dayjs(this.startDate).unix();
+            let endTimestamp = dayjs(this.endDate).unix();
+
+            // Log timestamps to verify conversion
+            console.log('Start timestamp:', startTimestamp);
+            console.log('End timestamp:', endTimestamp);
+
+            // Build the request string
+            let request = `/log.json?type=farm_harvest&timestamp[ge]=${startTimestamp}&timestamp[le]=${endTimestamp}`;
+            
+            // Log the request to verify
+            console.log('API Request:', request);
+
+            // Use getAllPages to get harvest logs
+            getAllPages(request, this.harvestLogs)
+                .catch(error => {
+                    console.log("Error getting harvest logs:", error);
+                });
         }
      },
      watch: {
