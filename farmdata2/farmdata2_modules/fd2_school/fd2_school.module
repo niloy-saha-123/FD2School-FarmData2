@@ -108,6 +108,15 @@ $items['farm/fd2-school/api2'] = array(
   'access arguments' => array('view fd2 school'),
   'weight' => 140,  // Higher weight than API tab so it appears after it
 );
+//Add the e2e tab
+$items['farm/fd2-school/e2e'] = array(
+  'title' => 'e2e',
+  'page callback' => 'fd2_school_view',
+  'page arguments' => array('e2e'),
+  'access arguments' => array('view fd2 school'),
+  'type' => MENU_LOCAL_TASK,
+  'weight' => 150,
+  );
 
   return $items;
 };
