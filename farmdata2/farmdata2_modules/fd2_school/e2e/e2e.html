@@ -4,8 +4,8 @@
     <p>This page is a <em>mockup</em> of a simplified harvest report.</p>
     <hr>
     
-    <div id="vue-app" v-cloak>
-      <h1>{{ reportTitle.trim() === '' ? 'Mock Harvest Report' : reportTitle }}</h1>
+    <div id="app" v-cloak>
+      <h1 data-cy="report-title">{{ reportTitle.trim() === '' ? 'Mock Harvest Report' : reportTitle }}</h1>
 
       <p>Details:</p>
       <ul>
@@ -16,24 +16,24 @@
         <li><strong>End:</strong> {{ reportEndDate }}</li>
         <li><strong>Crop:</strong> {{ reportCrop }}</li>
       </ul>
-
+ 
       <div>
         <label for="title">Title:</label>
         <input type="text" id="title" v-model="reportTitle" placeholder="My Sample Harvest Report">
       </div>
-
+ 
       <br>
-
+ 
       <div>
         <label for="cropSelect">Crop:</label>
         <select id="cropSelect" data-cy="crop-dropdown" v-model="reportCrop">
           <option value="All">All</option>
-          <option v-for="crop in cropNames" key="crop">{{ crop }}</option>
+          <option v-for="crop in cropNames" :key="crop">{{ crop }}</option>
         </select>
       </div>
-
+ 
       <br>
-
+ 
       <div>
         <label for="areaSelect">Area:</label>
         <select id="areaSelect" v-model="reportArea">
@@ -41,9 +41,9 @@
           <option v-for="area in areas" :value="area">{{ area }}</option>
         </select>
       </div>
-
+ 
       <br>
-
+ 
       <div>
         <label for="startDate">Start Date:</label>
         <input type="date" 
@@ -54,9 +54,9 @@
                min="2014-01-01" 
                max="2022-01-01">
       </div>
-
+ 
       <br>
-
+ 
       <div>
         <label for="endDate">End Date:</label>
         <input type="date" 
@@ -67,11 +67,11 @@
                min="2020-05-05" 
                max="2022-01-01">
       </div>
-
+ 
       <br>
-
-      <button @click="generateReport">Generate Report</button>
-
+ 
+      <button data-cy="generate-report-button" @click="generateReport">Generate Report</button>
+ 
       <div v-if="harvestLogs.length === 0">
         No matching records found.
       </div>
@@ -96,14 +96,13 @@
         </tbody>
       </table>
     </div>
-
+ 
     <script src="https://unpkg.com/vue@2"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
-
     <script>
       var app = new Vue({
-        el: "#vue-app",
+        el: "#app",
         data: {
           reportTitle: "My Sample Harvest Report",
           reportStartDate: "2020-05-05",
@@ -115,9 +114,43 @@
           farm: "",
           user: "",
           language: "",
-          idToCropMap: new Map(),
-          // Hard-coded crop names instead of using computed property
-          cropNames: ["ARUGULA", "BOKCHOY", "LETTUCE", "Peas", "Turnip"]
+          idToCropMap: new Map()
+        },
+        created() {
+          getIDToCropMap()
+            .then((theMap) => {
+              this.idToCropMap = theMap;
+            })
+            .catch((err) => {
+              console.log("Error fetching crop map", err);
+            });
+        },
+        computed: {
+          cropNames() {
+            return Array.from(this.idToCropMap.values()).sort();
+          },
+          harvestReportRows() {
+            let tableRows = [];
+            for(let log of this.harvestLogs) {
+              try {
+                let tableRow = {
+                  date: dayjs.unix(log.timestamp).format('YYYY-MM-DD'),
+                  area: log.area[0].name,
+                  crop: this.idToCropMap.get(log.data.crop_tid),
+                  yield: log.quantity[0].value,
+                  units: log.quantity[0].unit.name,
+                };
+                if (this.reportCrop === "All" || tableRow.crop === this.reportCrop) {
+                  if (this.reportArea === "All" || tableRow.area === this.reportArea) {
+                    tableRows.push(tableRow);
+                  }
+                }
+              } catch (error) {
+                console.error("Error processing log:", error);
+              }
+            }
+            return tableRows;
+          }
         },
         methods: {
           generateReport: function() {
@@ -130,7 +163,7 @@
               .catch((err) => {
                 console.error('Error fetching farm data:', err);
               });
-
+ 
             let startTimestamp = dayjs(this.reportStartDate).unix();
             let endTimestamp = dayjs(this.reportEndDate).unix();
             
@@ -146,8 +179,8 @@
           }
         }
       });
-
+ 
       Vue.config.devtools = true;
     </script>
   </body>
-</html>
+ </html>

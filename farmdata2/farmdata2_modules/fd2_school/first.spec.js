@@ -1,15 +1,32 @@
-describe('empty spec', () => {
-  it('passes', () => {
-    cy.visit('https://example.cypress.io')
+describe("Test the harvest report default values", () => {
+  beforeEach(() => {
+    cy.login("manager1", "farmdata2")
+    cy.visit("/farm/fd2-school/e2e")
+  })
+
+  it("Check the page header", () => {
+    cy.get('[data-cy=page-header]')
+      .should('have.text', 'Harvest Report')
+  })
+
+  it("Check the default dates", () => {
+    cy.get('[data-cy=start-date]')
+      .should('have.value', '2020-05-05')
     
-    cy.contains('type').click()
+    cy.get('[data-cy=end-date]')
+      .should('have.value', '2020-05-15')
+  })
 
-    // Should be on a new URL which includes '/commands/actions'
-    cy.url().should('include', '/commands/actions')
+  it("Check the crop dropdown", () => {
+    cy.get('[data-cy=crop-dropdown]')
+    .children()
+    .then($options => {
 
-    // Get an input, type into it and verify that the value has been updated
-    cy.get('.action-email')
-      .type('fake@email.com')
-      .should('have.value', 'fake@email.com')
+      expect($options).to.have.length(6)
+
+      expect($options.eq(0)).to.have.text('All')
+      expect($options.eq(4)).to.have.text('Peas')
+      expect($options.last()).to.have.text('Turnip')
+    })
   })
 })
