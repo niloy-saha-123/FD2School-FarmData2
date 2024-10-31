@@ -78,36 +78,21 @@
       <div v-if="harvestLogs.length === 0">
         No matching records found.
       </div>
-      <table v-else border="1">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Area</th>
-            <th>Crop</th>
-            <th>Yield</th>
-            <th>Units</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="log in harvestReportRows">
-            <td>{{ log.date }}</td>
-            <td>{{ log.area }}</td>
-            <td>{{ log.crop }}</td>
-            <td>{{ log.yield }}</td>
-            <td>{{ log.units }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <custom-table 
+          v-else
+          data-cy="harvest-table"
+          :columns="columns"
+          :rows="tableRows"
+          csv-name="harvest_report_">
+      </custom-table>
     </div>
  
-    <script src="https://unpkg.com/vue@2"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
     <script>
       var app = new Vue({
         el: "#fd2",
         components: {
           'dropdown-with-all': DropdownWithAllComponent,
+          'custom-table': CustomTableComponent,  // Added this
         },
         data: {
           reportTitle: "My Sample Harvest Report",
@@ -120,13 +105,19 @@
           farm: "",
           user: "",
           language: "",
-          idToCropMap: new Map()
+          idToCropMap: new Map(),
+          columns: [  // Added this
+            {"header": "Date", "visible": true, "inputType": {"type": "no input"}},
+            {"header": "Area", "visible": true, "inputType": {"type": "no input"}},
+            {"header": "Crop", "visible": true, "inputType": {"type": "no input"}},
+            {"header": "Yield", "visible": true, "inputType": {"type": "no input"}},
+            {"header": "Units", "visible": true, "inputType": {"type": "no input"}}
+          ]
         },
         created() {
           getIDToCropMap()
             .then((theMap) => {
               this.idToCropMap = theMap;
-              console.log("Crops:", Array.from(this.idToCropMap.values()).sort())
             })
             .catch((err) => {
               console.log("Error fetching crop map", err);
@@ -141,6 +132,7 @@
             for(let log of this.harvestLogs) {
               try {
                 let tableRow = {
+                  logID: log.id,
                   date: dayjs.unix(log.timestamp).format('YYYY-MM-DD'),
                   area: log.area[0].name,
                   crop: this.idToCropMap.get(log.data.crop_tid),
@@ -157,6 +149,18 @@
               }
             }
             return tableRows;
+          },
+          tableRows() {  // Added this
+            return this.harvestReportRows.map(row => ({
+              id: row.logID,
+              data: [
+                row.date,
+                row.area,
+                row.crop,
+                row.yield,
+                row.units
+              ]
+            }));
           }
         },
         methods: {
