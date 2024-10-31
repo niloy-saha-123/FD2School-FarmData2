@@ -4,14 +4,14 @@
     <p>This page is a <em>mockup</em> of a simplified harvest report.</p>
     <hr>
     
-    <div id="app" v-cloak>
+    <div id="fd2" v-cloak>
       <h1 data-cy="report-title">{{ reportTitle.trim() === '' ? 'Mock Harvest Report' : reportTitle }}</h1>
 
       <p>Details:</p>
       <ul>
         <li data-cy="farm-name"><strong>Farm:</strong> {{ farm }}</li>
         <li data-cy="username"><strong>User:</strong> {{ user }}</li>
-        <li><strong>Language:</strong> <span data-cy="language">{{ language }}</span></li> <!-- Updated line -->
+        <li><strong>Language:</strong> <span data-cy="language">{{ language }}</span></li>
         <li><strong>Start:</strong> {{ reportStartDate }}</li>
         <li><strong>End:</strong> {{ reportEndDate }}</li>
         <li><strong>Crop:</strong> {{ reportCrop }}</li>
@@ -25,11 +25,14 @@
       <br>
  
       <div>
-        <label for="cropSelect">Crop:</label>
-        <select id="cropSelect" data-cy="crop-dropdown" v-model="reportCrop">
-          <option value="All">All</option>
-          <option v-for="crop in cropNames" :key="crop">{{ crop }}</option>
-        </select>
+        <label>Crop:</label>
+        <dropdown-with-all 
+            data-cy="crop-dropdown"
+            includes-all
+            :selected-val="reportCrop"
+            :dropdown-list="cropNames"
+            @selection-changed="cropChange">
+        </dropdown-with-all>
       </div>
  
       <br>
@@ -102,7 +105,10 @@
     <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
     <script>
       var app = new Vue({
-        el: "#app",
+        el: "#fd2",
+        components: {
+          'dropdown-with-all': DropdownWithAllComponent,
+        },
         data: {
           reportTitle: "My Sample Harvest Report",
           reportStartDate: "2020-05-05",
@@ -153,6 +159,9 @@
           }
         },
         methods: {
+          cropChange(newCrop) {
+            this.reportCrop = newCrop;
+          },
           generateReport: function() {
             axios.get('/farm.json')
               .then((response) => {
