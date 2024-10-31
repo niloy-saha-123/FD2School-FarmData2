@@ -118,6 +118,16 @@ $items['farm/fd2-school/e2e'] = array(
   'weight' => 150,
   );
 
+//Add the FD2 tab
+$items['farm/fd2-school/fd2'] = array(
+  'title' => 'FD2',
+  'page callback' => 'fd2_school_view',
+  'page arguments' => array('fd2'),
+  'access arguments' => array('view fd2 school'),
+  'type' => MENU_LOCAL_TASK,
+  'weight' => 160,  // Higher weight than e2e tab so it appears after it
+);
+
   return $items;
 };
 
