@@ -126,6 +126,7 @@
           getIDToCropMap()
             .then((theMap) => {
               this.idToCropMap = theMap;
+              console.log("Crops:", Array.from(this.idToCropMap.values()).sort())
             })
             .catch((err) => {
               console.log("Error fetching crop map", err);
